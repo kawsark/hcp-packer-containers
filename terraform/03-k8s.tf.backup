@@ -1,0 +1,47 @@
+# This is still a work in progress
+resource "kubernetes_deployment" "vault" {
+  metadata {
+    name = "vault-hcp-example"
+    labels = {
+      App = "VaultHCPExample"
+    }
+  }
+
+  spec {
+    replicas = 2
+    selector {
+      match_labels = {
+        App = "VaultHCPExample"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          App = "VaultHCPExample"
+        }
+      }
+      spec {
+        container {
+          image = data.hcp_packer_image.app-image.cloud_image_id
+          name  = "vault"
+
+          port {
+            container_port = 8200
+          }
+
+          resources {
+            limits = {
+              cpu    = "0.5"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "250m"
+              memory = "50Mi"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
